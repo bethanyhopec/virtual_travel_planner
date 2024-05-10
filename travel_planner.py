@@ -1,7 +1,13 @@
 import streamlit as st
+import openai
 from openai import AsyncOpenAI
+from openai import OpenAI
 
-client = AsyncOpenAI(api_key=st.secrets["API_KEY"])
+client = AsyncOpenAI(
+    # This is the default and can be omitted
+    api_key=st.secrets["API_key"],
+    #api_key=os.getenv("API_key"),
+)
 
 async def generate_response(question, context):
     model = "text-davinci-003" 
