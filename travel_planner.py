@@ -32,6 +32,7 @@ def generate_response(client, question, user_preferences):
 
 def app():
     st.set_page_config(page_title="Virtual Travel Planner", page_icon="✈️")
+    text = """Virtual Travel Planner"""
     st.subheader(text)
 
     text = """Bethany Hope Cabristante BSCS 3A \n\n
