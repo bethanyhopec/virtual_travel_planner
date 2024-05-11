@@ -47,7 +47,7 @@ async def app():
     st.set_page_config(page_title="Virtual Travel Planner", page_icon="✈️")
 
     # Display an image at the top using st.image()
-    st.image("https://images.unsplash.com/photo-1503220377168-7d323e8b8a8a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaWxsLWxhZ2Vlbl8yMHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=800&q=80")
+    st.image("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.exoticca.com%2Fus%2Fblog%2Fmountain-and-beach-destinations-the-best-of-both-worlds%2F&psig=AOvVaw0SwcZ2sXwliSLhZh_bcIQ3&ust=1715472706783000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjsi4uohIYDFQAAAAAdAAAAABAQ")
 
     st.title("Virtual Travel Planner")
     question = st.text_input("Enter your travel query:")
