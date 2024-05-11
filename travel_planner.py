@@ -31,19 +31,13 @@ def generate_response(client, question, user_preferences):
     return response
 
 def app():
-      text = """Bethany Hope Cabristante BSCS 3A \n\n
-    CCS 229 - Intelligent Systems
-    Computer Science Department
-    College of Information and Communications Technology
-    West Visayas State University"""
-            st.text(text)
+    st.set_page_config(page_title="Virtual Travel Planner", page_icon="✈️")
 
-            st.set_page_config(page_title="Virtual Travel Planner", page_icon="✈️")
-    
-            st.image('travel.jpg')
-    
-    text = """The Virtual Travel Planner  helps users plan their trips by providing personalized travel recommendations based on their preferences"""
-            st.write(text)
+    st.image('travel.jpg')
+
+    text = """The Virtual Travel Planner helps users plan their trips by providing personalized travel recommendations based on their preferences"""
+    st.write(text)
+
     user_preferences = st.multiselect(
         "What are you interested in?",
         ["Beaches", "Mountains", "History & Culture", "Adventure", "Relaxation"]
@@ -61,4 +55,3 @@ def app():
 
 if __name__ == "__main__":
     app()
-
