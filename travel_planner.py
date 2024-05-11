@@ -1,9 +1,8 @@
 import streamlit as st
 import openai
-import streamlit as st
-from openai import AsyncOpenAI
+from openai import OpenAI
 
-async def generate_response(client, question, context):
+def generate_response(client, question, context):
     model = "text-davinci-003" 
 
     if "travel" in question.lower() or "trip" in question.lower():
@@ -12,16 +11,13 @@ async def generate_response(client, question, context):
             ["Beaches", "Mountains", "History & Culture", "Adventure", "Relaxation"]
         )
         current_location = "Iloilo City, Philippines"  
-        response = await client.request(
-            "POST",
-            "/v1/engines/text-davinci-003/completions",
-            json={
-                "prompt": f"Based on your preferences for {', '.join(user_preferences)} and your current location in {current_location}, I recommend visiting a place that offers these experiences. Here are some options:\n",
-                "max_tokens": 150,  
-                "n": 3,  
-                "stop": None,
-                "temperature": 0.7,
-            }
+        response = client.complete(
+            engine="text-davinci-003",
+            prompt=f"Based on your preferences for {', '.join(user_preferences)} and your current location in {current_location}, I recommend visiting a place that offers these experiences. Here are some options:\n",
+            max_tokens=150,  
+            n=3,  
+            stop=None,
+            temperature=0.7,  
         )
         
         for choice in response["choices"]:
@@ -30,21 +26,17 @@ async def generate_response(client, question, context):
             st.image("https://via.placeholder.com/300", width=300)  # Placeholder image
 
     else:
-        completion = await client.request(
-            "POST",
-            "/v1/engines/text-davinci-003/completions",
-            json={
-                "model": model,
-                "messages": [
-                    {"role": "user", "content": question},
-                    {"role": "system", "content": context}
-                ]
-            }
+        completion = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "user", "content": question},
+                {"role": "system", "content": context}
+            ]
         )
         response = completion["choices"][0]["message"]["content"]
     return response
 
-async def app():
+def app():
     st.set_page_config(page_title="Virtual Travel Planner", page_icon="✈️")
 
     # Display an image at the top using st.image()
@@ -56,13 +48,12 @@ async def app():
 
     if st.button("Plan my trip"):
         if question:
-            async with AsyncOpenAI(api_key=st.secrets["API_key"]) as client:
-                response = await generate_response(client, question, context)
+            with OpenAI(api_key=st.secrets["API_key"]) as client:
+                response = generate_response(client, question, context)
                 st.write("Response:")
                 st.write(response)
         else:
             st.error("Please enter a travel query.")
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(app())
+    app()
