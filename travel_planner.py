@@ -2,18 +2,13 @@ import streamlit as st
 import openai
 from openai import OpenAI
 
-def generate_response(client, question, context):
+def generate_response(client, question, user_preferences):
     model = "text-davinci-003" 
 
     if "travel" in question.lower() or "trip" in question.lower():
-        user_preferences = st.multiselect(
-            "What are you interested in?",
-            ["Beaches", "Mountains", "History & Culture", "Adventure", "Relaxation"]
-        )
-        current_location = "Iloilo City, Philippines"  
         response = client.complete(
             engine="text-davinci-003",
-            prompt=f"Based on your preferences for {', '.join(user_preferences)} and your current location in {current_location}, I recommend visiting a place that offers these experiences. Here are some options:\n",
+            prompt=f"Based on your preferences for {', '.join(user_preferences)}, I recommend visiting a place that offers these experiences. Here are some options:\n",
             max_tokens=150,  
             n=3,  
             stop=None,
@@ -30,7 +25,6 @@ def generate_response(client, question, context):
             model=model,
             messages=[
                 {"role": "user", "content": question},
-                {"role": "system", "content": context}
             ]
         )
         response = completion["choices"][0]["message"]["content"]
@@ -43,13 +37,16 @@ def app():
     st.image("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.exoticca.com%2Fus%2Fblog%2Fmountain-and-beach-destinations-the-best-of-both-worlds%2F&psig=AOvVaw0SwcZ2sXwliSLhZh_bcIQ3&ust=1715472706783000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjsi4uohIYDFQAAAAAdAAAAABAQ")
 
     st.title("Virtual Travel Planner")
-    question = st.text_input("Enter your travel query:")
-    context = st.text_area("Enter the context (optional):")
+    user_preferences = st.multiselect(
+        "What are you interested in?",
+        ["Beaches", "Mountains", "History & Culture", "Adventure", "Relaxation"]
+    )
+    question = st.text_input("Enter your travel query:", value=f"Preferences for {', '.join(user_preferences)}")
 
     if st.button("Plan my trip"):
         if question:
             with OpenAI(api_key=st.secrets["API_key"]) as client:
-                response = generate_response(client, question, context)
+                response = generate_response(client, question, user_preferences)
                 st.write("Response:")
                 st.write(response)
         else:
@@ -57,3 +54,4 @@ def app():
 
 if __name__ == "__main__":
     app()
+
