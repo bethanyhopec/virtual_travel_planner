@@ -3,11 +3,11 @@ import openai
 from openai import OpenAI
 
 def generate_response(client, question, user_preferences):
-    model = "text-davinci-003" 
+    model = "text-davinci-002" 
 
     if "travel" in question.lower() or "trip" in question.lower():
         response = client.complete(
-            engine="text-davinci-003",
+            engine="text-davinci-002",
             prompt=f"Based on your preferences for {', '.join(user_preferences)}, I recommend visiting a place that offers these experiences. Here are some options:\n",
             max_tokens=150,  
             n=3,  
