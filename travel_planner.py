@@ -32,6 +32,14 @@ def generate_response(client, question, user_preferences):
 
 def app():
     st.set_page_config(page_title="Virtual Travel Planner", page_icon="✈️")
+    st.subheader(text)
+
+    text = """Bethany Hope Cabristante BSCS 3A \n\n
+    CCS 229 - Intelligent Systems
+    Computer Science Department
+    College of Information and Communications Technology
+    West Visayas State University"""
+    st.text(text)
 
     st.image('travel.jpg')
 
