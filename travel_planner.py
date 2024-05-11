@@ -31,12 +31,19 @@ def generate_response(client, question, user_preferences):
     return response
 
 def app():
+      text = """Bethany Hope Cabristante BSCS 3A \n\n
+    CCS 229 - Intelligent Systems
+    Computer Science Department
+    College of Information and Communications Technology
+    West Visayas State University"""
+    st.text(text)
+
     st.set_page_config(page_title="Virtual Travel Planner", page_icon="✈️")
+    
+    st.image('travel.jpg')
 
-    # Display an image at the top using st.image()
-    st.image("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.exoticca.com%2Fus%2Fblog%2Fmountain-and-beach-destinations-the-best-of-both-worlds%2F&psig=AOvVaw0SwcZ2sXwliSLhZh_bcIQ3&ust=1715472706783000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjsi4uohIYDFQAAAAAdAAAAABAQ")
-
-    st.title("Virtual Travel Planner")
+    text = """The Virtual Travel Planner  helps users plan their trips by providing personalized travel recommendations based on their preferences"""
+    st.write(text)
     user_preferences = st.multiselect(
         "What are you interested in?",
         ["Beaches", "Mountains", "History & Culture", "Adventure", "Relaxation"]
