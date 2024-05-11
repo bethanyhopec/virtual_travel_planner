@@ -1,15 +1,9 @@
 import streamlit as st
 import openai
+import streamlit as st
 from openai import AsyncOpenAI
-from openai import OpenAI
 
-client = AsyncOpenAI(
-    # This is the default and can be omitted
-    api_key=st.secrets["API_key"],
-    #api_key=os.getenv("API_key"),
-)
-
-async def generate_response(question, context):
+async def generate_response(client, question, context):
     model = "text-davinci-003" 
 
     if "travel" in question.lower() or "trip" in question.lower():
@@ -27,10 +21,10 @@ async def generate_response(question, context):
             temperature=0.7,  
         )
         
-        for choice in response.choices:
-            recommendation = choice.text.strip()
+        for choice in response["choices"]:
+            recommendation = choice["text"].strip()
             st.write(f"- {recommendation}")
-            st.image("https://via.placeholder.com/300", width=300)  # Placeholder image
+            st.image("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.exoticca.com%2Fus%2Fblog%2Fmountain-and-beach-destinations-the-best-of-both-worlds%2F&psig=AOvVaw0SwcZ2sXwliSLhZh_bcIQ3&ust=1715472706783000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjsi4uohIYDFQAAAAAdAAAAABAQ", width=300)  # Placeholder image
 
     else:
         completion = await client.chat.completions.create(
@@ -40,7 +34,7 @@ async def generate_response(question, context):
                 {"role": "system", "content": context}
             ]
         )
-        response = completion.choices[0].message.content
+        response = completion["choices"][0]["message"]["content"]
     return response
 
 async def app():
@@ -55,9 +49,10 @@ async def app():
 
     if st.button("Plan my trip"):
         if question:
-            response = await generate_response(question, context)
-            st.write("Response:")
-            st.write(response)
+            async with AsyncOpenAI(api_key=st.secrets["API_key"]) as client:
+                response = await generate_response(client, question, context)
+                st.write("Response:")
+                st.write(response)
         else:
             st.error("Please enter a travel query.")
 
