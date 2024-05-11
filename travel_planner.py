@@ -12,27 +12,34 @@ async def generate_response(client, question, context):
             ["Beaches", "Mountains", "History & Culture", "Adventure", "Relaxation"]
         )
         current_location = "Iloilo City, Philippines"  
-        response = await client.complete(
-            engine="text-davinci-003",
-            prompt=f"Based on your preferences for {', '.join(user_preferences)} and your current location in {current_location}, I recommend visiting a place that offers these experiences. Here are some options:\n",
-            max_tokens=150,  
-            n=3,  
-            stop=None,
-            temperature=0.7,  
+        response = await client.request(
+            "POST",
+            "/v1/engines/text-davinci-003/completions",
+            json={
+                "prompt": f"Based on your preferences for {', '.join(user_preferences)} and your current location in {current_location}, I recommend visiting a place that offers these experiences. Here are some options:\n",
+                "max_tokens": 150,  
+                "n": 3,  
+                "stop": None,
+                "temperature": 0.7,
+            }
         )
         
         for choice in response["choices"]:
             recommendation = choice["text"].strip()
             st.write(f"- {recommendation}")
-            st.image("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.exoticca.com%2Fus%2Fblog%2Fmountain-and-beach-destinations-the-best-of-both-worlds%2F&psig=AOvVaw0SwcZ2sXwliSLhZh_bcIQ3&ust=1715472706783000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIjsi4uohIYDFQAAAAAdAAAAABAQ", width=300)  # Placeholder image
+            st.image("https://via.placeholder.com/300", width=300)  # Placeholder image
 
     else:
-        completion = await client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "user", "content": question},
-                {"role": "system", "content": context}
-            ]
+        completion = await client.request(
+            "POST",
+            "/v1/engines/text-davinci-003/completions",
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "user", "content": question},
+                    {"role": "system", "content": context}
+                ]
+            }
         )
         response = completion["choices"][0]["message"]["content"]
     return response
