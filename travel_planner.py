@@ -1,19 +1,16 @@
 import streamlit as st
 import openai
+import os
+
+from openai import AsyncOpenAI
+
+client = AsyncOpenAI(
+    api_key=os.getenv("API_key")
+)
 
 def generate_response(client, question, user_preferences):
-    """Generates a personalized travel response based on user preferences and query.
-
-    Args:
-        client (OpenAI): An OpenAI API client instance.
-        question (str): The user's travel query.
-        user_preferences (list): A list of the user's selected preferences.
-
-    Returns:
-        str: The generated travel response.
-    """
-    model = "text-davinci-003"  # Consider using a more advanced model for better results
-
+    
+   
     if any(term in question.lower() for term in ["travel", "trip"]):
         prompt = f"Based on your preferences for {', '.join(user_preferences)}, I recommend visiting:\n"
         response = client.Completion.create(
