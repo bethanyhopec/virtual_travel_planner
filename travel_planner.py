@@ -59,7 +59,7 @@ def app():
     st.markdown(dev_text)
 
     # App banner image (consider using a high-quality travel image)
-    st.image("travel_planner.jpg", use_column_width=True)
+    st.image("travel.jpg", use_column_width=True)
 
     # User input for preferences and query
     user_preferences = st.multiselect(
