@@ -4,33 +4,25 @@ import os
 
 # Set up OpenAI API key
 openai.api_key = os.getenv("API_key")
+
 async def generate_response(question, context):
     model = "gpt-3.5-turbo"
-    completion = await client.chat.completions.create(model=model, 
-        messages=[{"role": "user", "content": question}, 
-                {"role": "system", "content": context}])
-    return completion.choices[0].message.content
-            max_tokens=150,
-            n=3,
-            stop=None,
-            temperature=0.7,
-        )
-        recommendations = []
-        for choice in response["choices"]:
-            recommendations.append(choice["message"]["content"].strip())
-        
-        return "\n".join(recommendations)
-    else:
-        completion = client.ChatCompletion.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": "You are a travel assistant."},
-                {"role": "user", "content": question}
-            ],
-            max_tokens=150,
-            temperature=0.7,
-        )
-        return completion["choices"][0]["message"]["content"].strip()
+    completion = await client.chat.completions.create(
+        model=model, 
+        messages=[
+            {"role": "user", "content": question}, 
+            {"role": "system", "content": context}
+        ],
+        max_tokens=150,
+        n=3,
+        stop=None,
+        temperature=0.7,
+    )
+    recommendations = []
+    for choice in completion.choices:
+        recommendations.append(choice.message.content.strip())
+    
+    return "\n".join(recommendations)
 
 def app():
     """Creates the Streamlit app for the Travel Genie, a virtual travel assistant."""
@@ -77,9 +69,12 @@ def app():
     # Plan trip button and response handling
     if st.sidebar.button("Plan my trip"):
         if question:
+            try:
                 response = generate_response(openai, question, user_preferences)
                 st.subheader("Travel Recommendations:")
-                st.write(response)  
+                st.write(response)
+            except Exception as e:
+                st.error(f"Error generating response: {str(e)}")
         else:
             st.error("Please enter details about your travel plans or ask a question.")
 
@@ -97,13 +92,8 @@ def app():
 
     # Footer
     st.markdown("---")
-    st.markdown(
-        """
-        **Contact Information**  
-        For inquiries and support, please contact us at:  
-        - **Email:** bethanyhope.cabristante@wvsu.edu.ph  
-        """
-    )
+   
+  
 
 if __name__ == "__main__":
     app()
