@@ -47,7 +47,7 @@ def app():
     # App header and introduction
     st.header("Travel Genie")
     intro_text = """
-    Welcome to the Rravel Genie an virtual travel planner AI assistant! This app helps you plan your trips by providing
+    Welcome to the Travel Genie an virtual travel planner AI assistant! This app helps you plan your trips by providing
     personalized travel recommendations based on your preferences.
     """
     st.write(intro_text)
