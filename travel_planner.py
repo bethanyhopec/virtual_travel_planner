@@ -5,24 +5,25 @@ import os
 # Set up OpenAI API key
 openai.api_key = os.getenv("API_key")
 
-async def generate_response(question, context):
+async def generate_response(question, user_preferences):
     model = "gpt-3.5-turbo"
-    completion = await client.chat.completions.create(
-        model=model, 
+    prompt = f"Based on your preferences for {', '.join(user_preferences)}, I recommend visiting:\n" if any(term in question.lower() for term in ["travel", "trip"]) else question
+    completion = await openai.client.chat.completions.create(
+        model=model,
         messages=[
-            {"role": "user", "content": question}, 
-            {"role": "system", "content": context}
+            {"role": "system", "content": "You are a travel assistant."},
+            {"role": "user", "content": prompt}
         ],
         max_tokens=150,
-        n=3,
-        stop=None,
         temperature=0.7,
+        n=3
     )
-    recommendations = []
-    for choice in completion.choices:
-        recommendations.append(choice.message.content.strip())
     
-    return "\n".join(recommendations)
+    if any(term in question.lower() for term in ["travel", "trip"]):
+        recommendations = [choice["message"]["content"].strip() for choice in completion.choices]
+        return "\n".join(recommendations)
+    else:
+        return completion.choices[0].message.content.strip()
 
 def app():
     """Creates the Streamlit app for the Travel Genie, a virtual travel assistant."""
@@ -70,7 +71,7 @@ def app():
     if st.sidebar.button("Plan my trip"):
         if question:
             try:
-                response = generate_response(openai, question, user_preferences)
+                response = generate_response(question, user_preferences)
                 st.subheader("Travel Recommendations:")
                 st.write(response)
             except Exception as e:
@@ -92,8 +93,8 @@ def app():
 
     # Footer
     st.markdown("---")
-   
-  
+    
+    )
 
 if __name__ == "__main__":
     app()
