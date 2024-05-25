@@ -1,16 +1,15 @@
 import streamlit as st
 import openai
 import os
-import asyncio
 
 # Set up OpenAI API key
 openai.api_key = os.getenv("API_key")
 
-async def generate_response(client, question, user_preferences):
+def generate_response(client, question, user_preferences):
     model = "gpt-3.5-turbo"
     if any(term in question.lower() for term in ["travel", "trip"]):
         prompt = f"Based on your preferences for {', '.join(user_preferences)}, I recommend visiting:\n"
-        response = await client.chat.completions.create(
+        response = client.chat.completions.create(
             model=model,
             messages=[
                 {"role": "system", "content": "You are a travel assistant."},
@@ -25,9 +24,9 @@ async def generate_response(client, question, user_preferences):
         for choice in response["choices"]:
             recommendations.append(choice["message"]["content"].strip())
         
-        return "\n".join(recommendations)  
+        return "\n".join(recommendations)
     else:
-        completion = await client.chat.completions.create(
+        completion = client.ChatCompletion.create(
             model=model,
             messages=[
                 {"role": "system", "content": "You are a travel assistant."},
@@ -76,28 +75,23 @@ def app():
     )
 
     question = st.sidebar.text_input(
-        "Tell us more about your travel plans or ask a specific question:",
+        "Tell us more about your travel plans:",
         value=f"I am interested in {', '.join(user_preferences)} and prefer {travel_style} travel." if user_preferences else ""
     )
 
     # Plan trip button and response handling
     if st.sidebar.button("Plan my trip"):
         if question:
-            try:
-                response = asyncio.run(generate_response(openai, question, user_preferences))
+                response = generate_response(openai, question, user_preferences)
                 st.subheader("Travel Recommendations:")
                 st.write(response)
-            except Exception as e:
-                st.error(f"Error generating response: {str(e)}")
         else:
             st.error("Please enter details about your travel plans or ask a question.")
-            
-
+    
     st.sidebar.markdown("![Travel Image](https://source.unsplash.com/featured/?travel)")
 
     # Footer
     st.markdown("---")
-
 
 if __name__ == "__main__":
     app()
