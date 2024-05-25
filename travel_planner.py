@@ -2,17 +2,21 @@ import streamlit as st
 import openai
 import os
 
+
 openai.api_key = os.getenv("API_key")
 
-
-model = "text-davinci-003"  
+# Define the model to be used
+model = "gpt-3.5-turbo"  
 
 def generate_response(client, question, user_preferences):
     if any(term in question.lower() for term in ["travel", "trip"]):
         prompt = f"Based on your preferences for {', '.join(user_preferences)}, I recommend visiting:\n"
-        response = client.Completion.create(
-            engine=model,
-            prompt=prompt,
+        response = client.ChatCompletion.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are a travel assistant."},
+                {"role": "user", "content": prompt}
+            ],
             max_tokens=150,
             n=3,
             stop=None,
@@ -21,17 +25,20 @@ def generate_response(client, question, user_preferences):
 
         recommendations = []
         for choice in response["choices"]:
-            recommendations.append(choice["text"].strip())
+            recommendations.append(choice["message"]["content"].strip())
         
         return "\n".join(recommendations)
     else:
-        completion = client.Completion.create(
-            engine=model,
-            prompt=question,
+        completion = client.ChatCompletion.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are a travel assistant."},
+                {"role": "user", "content": question}
+            ],
             max_tokens=150,
             temperature=0.7,
         )
-        return completion["choices"][0]["text"].strip()
+        return completion["choices"][0]["message"]["content"].strip()
 
 def app():
     """Creates the Streamlit app for the Virtual Travel Planner."""
