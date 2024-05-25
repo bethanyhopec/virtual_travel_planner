@@ -41,13 +41,13 @@ def generate_response(client, question, user_preferences):
         return completion["choices"][0]["message"]["content"].strip()
 
 def app():
-    """Creates the Streamlit app for the Virtual Travel Planner."""
-    st.set_page_config(page_title="Virtual Travel Planner", page_icon="✈️")
+    """Creates the Streamlit app for the Travel Genie a virtual travel assistent."""
+    st.set_page_config(page_title="Travel Genie", page_icon="✈️")
 
     # App header and introduction
-    st.header("Virtual Travel Planner")
+    st.header("Travel Genie")
     intro_text = """
-    Welcome to the Virtual Travel Planner! This app helps you plan your trips by providing
+    Welcome to the Rravel Genie an virtual travel planner AI assistant! This app helps you plan your trips by providing
     personalized travel recommendations based on your preferences.
     """
     st.write(intro_text)
