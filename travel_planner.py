@@ -25,7 +25,7 @@ async def generate_response(client, question, user_preferences):
         for choice in response["choices"]:
             recommendations.append(choice["message"]["content"].strip())
         
-        return "\n".join(recommendations)
+        return "\n".join(recommendations)  
     else:
         completion = await client.chat.completions.create(
             model=model,
