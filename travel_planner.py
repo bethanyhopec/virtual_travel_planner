@@ -92,15 +92,6 @@ def app():
         else:
             st.error("Please enter details about your travel plans or ask a question.")
             
-    # Additional features
-    st.sidebar.markdown("## Additional Features")
-    st.sidebar.markdown(
-        """
-        - **Travel Tips:** Get practical advice for a hassle-free journey.
-        - **Local Insights:** Discover hidden gems and local favorites.
-        - **Packing List:** Personalized packing checklist based on your destination.
-        """
-    )
 
     st.sidebar.markdown("![Travel Image](https://source.unsplash.com/featured/?travel)")
 
