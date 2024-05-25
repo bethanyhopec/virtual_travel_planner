@@ -1,29 +1,42 @@
 import streamlit as st
 import openai
 import os
+import asyncio
 
 # Set up OpenAI API key
 openai.api_key = os.getenv("API_key")
 
-async def generate_response(question, user_preferences):
+async def generate_response(client, question, user_preferences):
     model = "gpt-3.5-turbo"
-    prompt = f"Based on your preferences for {', '.join(user_preferences)}, I recommend visiting:\n" if any(term in question.lower() for term in ["travel", "trip"]) else question
-    completion = await openai.client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": "You are a travel assistant."},
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=150,
-        temperature=0.7,
-        n=3
-    )
-    
     if any(term in question.lower() for term in ["travel", "trip"]):
-        recommendations = [choice["message"]["content"].strip() for choice in completion.choices]
+        prompt = f"Based on your preferences for {', '.join(user_preferences)}, I recommend visiting:\n"
+        response = await client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are a travel assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=150,
+            n=3,
+            stop=None,
+            temperature=0.7,
+        )
+        recommendations = []
+        for choice in response["choices"]:
+            recommendations.append(choice["message"]["content"].strip())
+        
         return "\n".join(recommendations)
     else:
-        return completion.choices[0].message.content.strip()
+        completion = await client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are a travel assistant."},
+                {"role": "user", "content": question}
+            ],
+            max_tokens=150,
+            temperature=0.7,
+        )
+        return completion["choices"][0]["message"]["content"].strip()
 
 def app():
     """Creates the Streamlit app for the Travel Genie, a virtual travel assistant."""
@@ -71,14 +84,14 @@ def app():
     if st.sidebar.button("Plan my trip"):
         if question:
             try:
-                response = generate_response(question, user_preferences)
+                response = asyncio.run(generate_response(openai, question, user_preferences))
                 st.subheader("Travel Recommendations:")
                 st.write(response)
             except Exception as e:
                 st.error(f"Error generating response: {str(e)}")
         else:
             st.error("Please enter details about your travel plans or ask a question.")
-
+            
     # Additional features
     st.sidebar.markdown("## Additional Features")
     st.sidebar.markdown(
