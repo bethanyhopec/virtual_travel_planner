@@ -2,11 +2,11 @@ import streamlit as st
 import openai
 import os
 
-
+# Set up OpenAI API key
 openai.api_key = os.getenv("API_key")
 
 # Define the model to be used
-model = "gpt-3.5-turbo"  
+model = "gpt-3.5-turbo"
 
 def generate_response(client, question, user_preferences):
     if any(term in question.lower() for term in ["travel", "trip"]):
@@ -41,13 +41,13 @@ def generate_response(client, question, user_preferences):
         return completion["choices"][0]["message"]["content"].strip()
 
 def app():
-    """Creates the Streamlit app for the Travel Genie a virtual travel assistent."""
+    """Creates the Streamlit app for the Travel Genie, a virtual travel assistant."""
     st.set_page_config(page_title="Travel Genie", page_icon="✈️")
 
     # App header and introduction
     st.header("Travel Genie")
     intro_text = """
-    Welcome to the Travel Genie an virtual travel planner AI assistant! This app helps you plan your trips by providing
+    Welcome to the Travel Genie, a virtual travel planner AI assistant! This app helps you plan your trips by providing
     personalized travel recommendations based on your preferences.
     """
     st.write(intro_text)
@@ -66,23 +66,24 @@ def app():
     st.image("travel.jpg", use_column_width=True)
 
     # User input for preferences and query
-    user_preferences = st.multiselect(
+    st.sidebar.header("Personalize Your Travel Plan")
+    user_preferences = st.sidebar.multiselect(
         "What are you interested in?",
         ["Beaches", "Mountains", "History & Culture", "Adventure", "Relaxation"]
     )
     
-    travel_style = st.radio(
+    travel_style = st.sidebar.radio(
         "What is your preferred travel style?",
         ["Budget", "Luxury", "Family-friendly", "Solo Travel", "Group Travel"]
     )
 
-    question = st.text_input(
+    question = st.sidebar.text_input(
         "Tell us more about your travel plans or ask a specific question:",
         value=f"I am interested in {', '.join(user_preferences)} and prefer {travel_style} travel." if user_preferences else ""
     )
 
     # Plan trip button and response handling
-    if st.button("Plan my trip"):
+    if st.sidebar.button("Plan my trip"):
         if question:
             try:
                 response = generate_response(openai, question, user_preferences)
@@ -93,5 +94,28 @@ def app():
         else:
             st.error("Please enter details about your travel plans or ask a question.")
 
+    # Additional features
+    st.sidebar.markdown("## Additional Features")
+    st.sidebar.markdown(
+        """
+        - **Travel Tips:** Get practical advice for a hassle-free journey.
+        - **Local Insights:** Discover hidden gems and local favorites.
+        - **Packing List:** Personalized packing checklist based on your destination.
+        """
+    )
+
+    st.sidebar.markdown("![Travel Image](https://source.unsplash.com/featured/?travel)")
+
+    # Footer
+    st.markdown("---")
+    st.markdown(
+        """
+        **Contact Information**  
+        For inquiries and support, please contact us at:  
+        - **Email:** bethanyhope.cabristante@wvsu.edu.ph  
+        """
+    )
+
 if __name__ == "__main__":
     app()
+
