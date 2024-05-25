@@ -2,15 +2,12 @@ import streamlit as st
 import openai
 import os
 
-from openai import AsyncOpenAI
+openai.api_key = os.getenv("API_key")
 
-client = AsyncOpenAI(
-    api_key=os.getenv("API_key")
-)
+
+model = "text-davinci-003"  
 
 def generate_response(client, question, user_preferences):
-    
-   
     if any(term in question.lower() for term in ["travel", "trip"]):
         prompt = f"Based on your preferences for {', '.join(user_preferences)}, I recommend visiting:\n"
         response = client.Completion.create(
@@ -29,7 +26,7 @@ def generate_response(client, question, user_preferences):
         return "\n".join(recommendations)
     else:
         completion = client.Completion.create(
-            model=model,
+            engine=model,
             prompt=question,
             max_tokens=150,
             temperature=0.7,
@@ -66,24 +63,28 @@ def app():
         "What are you interested in?",
         ["Beaches", "Mountains", "History & Culture", "Adventure", "Relaxation"]
     )
+    
+    travel_style = st.radio(
+        "What is your preferred travel style?",
+        ["Budget", "Luxury", "Family-friendly", "Solo Travel", "Group Travel"]
+    )
+
     question = st.text_input(
-        "Enter your travel query:",
-        value=f"Preferences for {', '.join(user_preferences)}" if user_preferences else ""
+        "Tell us more about your travel plans or ask a specific question:",
+        value=f"I am interested in {', '.join(user_preferences)} and prefer {travel_style} travel." if user_preferences else ""
     )
 
     # Plan trip button and response handling
     if st.button("Plan my trip"):
         if question:
             try:
-                openai.api_key = st.secrets["API_key"]
-                client = openai
-                response = generate_response(client, question, user_preferences)
+                response = generate_response(openai, question, user_preferences)
                 st.subheader("Travel Recommendations:")
                 st.write(response)
             except Exception as e:
                 st.error(f"Error generating response: {str(e)}")
         else:
-            st.error("Please enter a travel query.")
+            st.error("Please enter details about your travel plans or ask a question.")
 
 if __name__ == "__main__":
     app()
