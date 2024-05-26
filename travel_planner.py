@@ -63,24 +63,24 @@ def app():
     st.image("travel.jpg", use_column_width=True)
 
     # User input for preferences and query
-    st.sidebar.header("Personalize Your Travel Plan")
-    user_preferences = st.sidebar.multiselect(
+    st.header("Personalize Your Travel Plan")
+    user_preferences = st.multiselect(
         "What are you interested in?",
         ["Beaches", "Mountains", "History & Culture", "Adventure", "Relaxation"]
     )
     
-    travel_style = st.sidebar.radio(
+    travel_style = st.radio(
         "What is your preferred travel style?",
         ["Budget", "Luxury", "Family-friendly", "Solo Travel", "Group Travel"]
     )
 
-    question = st.sidebar.text_input(
+    question = st.text_input(
         "Tell us more about your travel plans:",
         value=f"I am interested in {', '.join(user_preferences)} and prefer {travel_style} travel." if user_preferences else ""
     )
 
     # Plan trip button and response handling
-    if st.sidebar.button("Plan my trip"):
+    if st.button("Plan my trip"):
         if question:
                 response = generate_response(openai, question, user_preferences)
                 st.subheader("Travel Recommendations:")
@@ -88,7 +88,7 @@ def app():
         else:
             st.error("Please enter details about your travel plans or ask a question.")
     
-    st.sidebar.markdown("![Travel Image](https://source.unsplash.com/featured/?travel)")
+    st.markdown("![Travel Image](https://source.unsplash.com/featured/?travel)")
 
     # Footer
     st.markdown("---")
